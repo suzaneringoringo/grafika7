@@ -8,11 +8,16 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 #include <fstream>
+#include <unistd.h>
+#include <linux/input.h>
 using namespace std;
+
+#define MOUSEFILE "/dev/input/mice\0"
 
 // inisialisasi struct
 struct fb_var_screeninfo vinfo;
 struct fb_fix_screeninfo finfo;
+struct input_event ie;
 
 // inisialisasi vektor
 vector<viewport> viewTembus;
@@ -25,11 +30,19 @@ int pivX = 650;
 int pivY = 350;
 int layarx = 800;
 int layary = 1200;
-point curPos;
+point curPos = {200,200};
+int fd;
+int selected1 = 0;
+int selected2 = 0;
+bool mouseOn = true;
+bool redrawMap = true;
+string menus[7] = {"MENU", "1", "2", "3", "4", "5", "6"};
+
 
 // inisialisasi daftar warna
 color notSoBlack = {50,50,50,0};
 color white = {255,255,255,0};
+color black = {	0, 0, 0, 0 };
 
 void draw_dot(int x, int y, color* c) {
 	if((x<1) || (x>layarx) || (y<1) || (y>layary)){
@@ -369,8 +382,6 @@ void clear_screen(int xx, int yy, int width, int height, color *desired) {
 
 void showMenu() {
 
-	string menus[7] = {"MENU", "Tugas1", "Tugas2", "Tugas3", "Tugas4", "Tugas5", "Tugas6"};
-
 	int first_x = 200;
 	int first_y = 30;
 	readFont(menus[0], menus[0].length(), first_y + 20, 50);
@@ -385,16 +396,18 @@ void showMenu() {
 		tempViewport.p2 = p2;
 
 		p1.x = p2.x; p1.y = p2.y + 60;
+		tempViewport.p3 = p1;
 		draw_line(p2, p1, &white);
 		p2.x = p1.x - 160; p2.y = p1.y;
 		draw_line(p2, p1, &white);
-		tempViewport.p3 = p2;
-		tempViewport.p4 = p1;
+		
+		tempViewport.p4 = p2;
 
 		p1.x = p2.x; p1.y = p2.y - 60;
 		draw_line(p2, p1, &white);
 		readFont(menus[i], menus[i].length(), first_y + 20, first_x + 20);
 		first_y += 80;
+		initialize(&tempViewport);
 		viewTembus.push_back(tempViewport);
 	}
 }
@@ -441,7 +454,8 @@ void readMouseInput(point &result, int &terminate) {
                 }
                 // warnain viewport ke result;
                 if (hasil == 0) {
-                    selected1 = !selected1;
+                    cout << "haha";
+					fflush(stdout);
                 }
                 if (hasil == 1) {
                     selected2 = !selected2;
@@ -503,7 +517,6 @@ void mouseMovement(vector<viewport> viewHid, vector<viewport> viewTembus, point 
     point tempP = {curPos.x, curPos.y};
     
     readMouseInput(curPos, terminate);
-    // cout << terminate;
     result = 1;
 
     for (int i = 0; i < viewHid.size(); i++) {
@@ -516,16 +529,18 @@ void mouseMovement(vector<viewport> viewHid, vector<viewport> viewTembus, point 
         redraw(tempP);
     }
     
+
     // redraw viewport yang ketimpa padahal hrsnya enggak
     for (int i = 0; i < viewTembus.size(); i++) {
-        
-        clear_screen(viewTembus[i].xmin, viewTembus[i].ymin, viewTembus[i].xmax+1, viewTembus[i].ymax+1, &black);
-        
+        if (pointerPos(viewTembus[i], tempP) == 0) {
+        clear_screen(viewTembus[i].xmin, viewTembus[i].ymin, viewTembus[i].xmax+1, viewTembus[i].ymax+1, &notSoBlack);
         draw_line(viewTembus[i].p1, viewTembus[i].p2, &white);
         draw_line(viewTembus[i].p2, viewTembus[i].p3, &white);
         draw_line(viewTembus[i].p3, viewTembus[i].p4, &white);
         draw_line(viewTembus[i].p4, viewTembus[i].p1, &white);
-        
+		// tulisin kata2 nya lagi
+		readFont(menus[i+1], menus[i+1].length(), viewTembus[i].ymin + 20, viewTembus[i].xmin + 20);
+		}
     }
 
 }
@@ -572,8 +587,21 @@ int main () {
 		exit(4);
 	}
 	printf("The framebuffer device was mapped to memory successfully.\n");
-
+	if((fd = open(MOUSEFILE, O_RDONLY | O_NONBLOCK )) == -1)
+    {
+        printf("NonBlocking %s open ERROR\n",MOUSEFILE);
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        printf("NonBlocking %s open OK\n",MOUSEFILE);
+    }
 	clear_screen(0,0,800,600,&notSoBlack);
 	showMenu();
+
+	int terminate = 0;
+	while (!terminate) {
+		mouseMovement(viewHid,viewTembus,curPos,terminate);
+	}
     return 0;
 }
