@@ -23,6 +23,23 @@ int pointPos(viewport view, point p){
 	return pos;
 }
 
+int pointerPos(viewport view, point p){
+	int pos = 0;
+	if (p.x < (view.xmin - 10)){
+		pos += 8;
+	} else if (p.x > (view.xmax + 10)){
+		pos += 4;
+	}
+	
+	if (p.y < (view.ymin - 10)){
+		pos += 2;
+	} else if (p.y > (view.ymax + 10)){
+		pos += 1;
+	}
+	
+	return pos;
+}
+
 //Mengisi nilai xmax xmin ymax ymin sebuah viewport
 void initialize(viewport* view){
 	view->xmax = view->p1.x;

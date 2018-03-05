@@ -464,7 +464,7 @@ void readMouseInput(point &result, int &terminate) {
 				}else if(hasil == 4){
 					std::system("./5_viewport");
 				}else if(hasil == 5){
-					std::system("./6_circle");
+					std::system("./6_peta_itb");
 				}else{
 					std::system("./error");
 				}

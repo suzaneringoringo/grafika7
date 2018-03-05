@@ -17,6 +17,8 @@ void initialize(viewport* view);
 
 int pointPos(viewport view, point p);
 
+int pointerPos(viewport view, point p);
+
 double dot(point a, point b);
 
 double cross(point a, point b);
