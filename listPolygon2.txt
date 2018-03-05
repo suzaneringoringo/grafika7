@@ -1,0 +1,5 @@
+4
+jalanAtas.txt
+jalanBawah.txt
+jalanKiri.txt
+jalanKanan.txt
