@@ -311,7 +311,7 @@ int findSpace(char* test,int len, int start){
 	}
 }
 
-char inpfile[] = {"A.txt"};
+char inpfile[] = {"grafika3/A.txt"};
 void draw_huruf(int x, int y, char c){
 	// koreksi huruf kecil -> -32
 	char c2;
@@ -321,7 +321,7 @@ void draw_huruf(int x, int y, char c){
 		c2 = c;
 	}
 	point charpoints[jumlah_maksimal_titik];
-	inpfile[0] = c2;
+	inpfile[9] = c2;
 	draw(charpoints, inpfile, x, y);
 }
 
