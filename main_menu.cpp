@@ -452,14 +452,22 @@ void readMouseInput(point &result, int &terminate) {
                         traversal++;
                     }
                 }
-                // warnain viewport ke result;
-                if (hasil == 0) {
-                    cout << "haha";
-					fflush(stdout);
-                }
-                if (hasil == 1) {
-                    selected2 = !selected2;
-                }
+                
+				if(hasil == 0){	
+					std::system("./1_font");
+				}else if(hasil == 1){
+					std::system("./2_plane");
+				}else if(hasil == 2){
+					std::system("./3_font");
+				}else if(hasil == 3){
+					std::system("./4_scaling_rotation");
+				}else if(hasil == 4){
+					std::system("./5_viewport");
+				}else if(hasil == 5){
+					std::system("./6_circle");
+				}else{
+					std::system("./prog2");
+				}
                 redrawMap = true;
 
             } else if (bRight == 1) {
