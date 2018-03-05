@@ -466,7 +466,7 @@ void readMouseInput(point &result, int &terminate) {
 				}else if(hasil == 5){
 					std::system("./6_circle");
 				}else{
-					std::system("./prog2");
+					std::system("./error");
 				}
                 redrawMap = true;
 
