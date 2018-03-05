@@ -14,6 +14,10 @@ using namespace std;
 struct fb_var_screeninfo vinfo;
 struct fb_fix_screeninfo finfo;
 
+// inisialisasi vektor
+vector<viewport> viewTembus;
+vector<viewport> viewHid;
+
 // insialisasi variabel
 char *fbp = 0;
 point piv;
@@ -372,17 +376,25 @@ void showMenu() {
 	
 	point p1, p2;
 	for (int i = 1; i < 7; i++) {
+		viewport tempViewport;
 		p1.x = first_x; p1.y = first_y;
 		p2.x = first_x + 160; p2.y = p1.y;
 		draw_line(p1, p2, &white);
+		tempViewport.p1 = p1;
+		tempViewport.p2 = p2;
+
 		p1.x = p2.x; p1.y = p2.y + 60;
 		draw_line(p2, p1, &white);
 		p2.x = p1.x - 160; p2.y = p1.y;
 		draw_line(p2, p1, &white);
+		tempViewport.p3 = p2;
+		tempViewport.p4 = p1;
+
 		p1.x = p2.x; p1.y = p2.y - 60;
 		draw_line(p2, p1, &white);
 		readFont(menus[i], menus[i].length(), first_y + 20, first_x + 20);
 		first_y += 80;
+		viewTembus.push_back(tempViewport);
 	}
 }
 

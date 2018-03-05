@@ -56,9 +56,8 @@ color blue = { 0, 0, 255, 0 };
 color red = {255, 0, 0, 0};
 
 point piv;
-int pivX = 650;
-int pivY = 350;
-int r = 30;
+int pivX;
+int pivY;
 
 void readFont(string pStr, int length, int first_y, int first_x) {
 	//read char
@@ -763,6 +762,16 @@ void moveViewport(int& terminate) {
             translasi((colorTupleListJalanan[ite].first),cin,10);
         }
 
+        if (cin == 'w') {
+        	pivY = pivY - 10;
+	    } else if (cin == 'a') {
+	        pivX = pivX - 10;      
+	    } else if (cin == 's') {
+	        pivY = pivY + 10;
+	    } else if (cin == 'd') {
+	        pivX = pivX + 10;
+	    }
+
         translasi(p1,cin,10);
         
     }
@@ -865,16 +874,14 @@ int main () {
     viewp.p4 = cp[3];
     initialize(&viewp);
     viewTembus.push_back(viewp);
-    // SETUP DRAW CIRCLE
     
-    pivX=piv.x;
+    // SETUP DRAW CIRCLE
+    pivX = 650;
+    pivY = 350;
+    int r = 30;
     int curX = 0;
     int curY = r;
-    
-    int Fe = (pivX+1)*(pivX+1) + (pivY)*(pivY) - r*r;
-    int Fse = (pivX+1)*(pivX+1) + (pivY-1)*(pivY-1) - r*r;
     int d = 3 - (2 * r);
-    
     // END SETUP DRAW CIRCLE
     
 
