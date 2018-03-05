@@ -25,6 +25,7 @@ int pivX = 650;
 int pivY = 350;
 int layarx = 800;
 int layary = 1200;
+point curPos;
 
 // inisialisasi daftar warna
 color notSoBlack = {50,50,50,0};
@@ -396,6 +397,137 @@ void showMenu() {
 		first_y += 80;
 		viewTembus.push_back(tempViewport);
 	}
+}
+
+void drawPointer(point center) {
+    // garis lurus keatas
+    for (int i = 0; i < 3; i++) {
+        point temp = {center.x+i -1, center.y-10};
+        point dest = {center.x + i - 1, center.y + 10};
+        draw_line(temp,dest,&white);
+    }
+    for (int i = 0; i < 3; i++) {
+        point temp = {center.x - 10, center.y+i-1};
+        point dest = {center.x + 10, center.y+i-1};
+        draw_line(temp,dest,&white);
+    }
+}
+
+void readMouseInput(point &result, int &terminate) {
+    unsigned char *ptr = (unsigned char*)&ie;
+    
+    unsigned char button,bLeft,bMiddle,bRight;
+    char x,y;                                                            // the relX , relY datas
+    int absolute_x,absolute_y;
+    while (1) {
+        if(read(fd, &ie, sizeof(struct input_event))!=-1) {
+            
+            //redraw(result);
+            button=ptr[0];
+            bLeft = button & 0x1;
+            bMiddle = ( button & 0x4 ) > 0;
+            bRight = ( button & 0x2 ) > 0;
+            x=(char) ptr[1];y=(char) ptr[2];
+            if (bLeft ==1) {
+                // check coordinate range
+                int hasil = -1;
+                int traversal = 0;
+                while ((hasil == -1) && (traversal < viewTembus.size())) {
+                    if (pointPos(viewTembus[traversal],result) == 0) {
+                        hasil = traversal;
+                    } else {
+                        traversal++;
+                    }
+                }
+                // warnain viewport ke result;
+                if (hasil == 0) {
+                    selected1 = !selected1;
+                }
+                if (hasil == 1) {
+                    selected2 = !selected2;
+                }
+                redrawMap = true;
+
+            } else if (bRight == 1) {
+                mouseOn = false;
+                
+            }
+            // computes absolute x,y coordinates
+            result.x +=x;
+            result.y -=y;
+            // set absolute reference ?
+            // pengaman
+            if (result.x < 15) {
+                result.x = 15;
+            }
+            if (result.x > 785) {
+                result.x = 785;
+            }
+            if (result.y < 15) {
+                result.y = 15;
+            }
+            if (result.y > 585) {
+                result.y = 585;
+            }
+            break;
+        }
+    }
+}
+
+void redraw(point center) {
+    // garis lurus keatas
+    for (int i = 0; i < 3; i++) {
+        point temp = {center.x+i -1, center.y-10};
+        point dest = {center.x + i - 1, center.y + 10};
+        draw_line(temp,dest,&notSoBlack);
+    }
+    for (int i = 0; i < 3; i++) {
+        point temp = {center.x - 10, center.y+i-1};
+        point dest = {center.x + 10, center.y+i-1};
+        draw_line(temp,dest,&notSoBlack);
+    }
+}
+
+void mouseMovement(vector<viewport> viewHid, vector<viewport> viewTembus, point &center, int &terminate) {
+    int result = 1;
+
+    for (int i = 0; i < viewHid.size(); i++) {
+        if (pointerPos(viewHid[i], curPos) == 0) {
+            result = 0;
+            break;
+        }
+    }
+    if (result != 0) {
+        drawPointer(curPos);
+    }
+    point tempP = {curPos.x, curPos.y};
+    
+    readMouseInput(curPos, terminate);
+    // cout << terminate;
+    result = 1;
+
+    for (int i = 0; i < viewHid.size(); i++) {
+        if (pointerPos(viewHid[i], tempP) == 0) {
+            result = 0;
+            break;
+        }
+    }
+    if (result != 0) {
+        redraw(tempP);
+    }
+    
+    // redraw viewport yang ketimpa padahal hrsnya enggak
+    for (int i = 0; i < viewTembus.size(); i++) {
+        
+        clear_screen(viewTembus[i].xmin, viewTembus[i].ymin, viewTembus[i].xmax+1, viewTembus[i].ymax+1, &black);
+        
+        draw_line(viewTembus[i].p1, viewTembus[i].p2, &white);
+        draw_line(viewTembus[i].p2, viewTembus[i].p3, &white);
+        draw_line(viewTembus[i].p3, viewTembus[i].p4, &white);
+        draw_line(viewTembus[i].p4, viewTembus[i].p1, &white);
+        
+    }
+
 }
 
 int main () {

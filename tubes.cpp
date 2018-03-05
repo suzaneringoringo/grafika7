@@ -441,30 +441,6 @@ void clear_screen(int xx, int yy, int width, int height, color *desired) {
     }
 }
 
-void redraw(vector<memList> &listEntry) {
-    for (int j = 0; j < listEntry.size(); j++) {
-        memList entry = listEntry[j];
-        int addx = 0, addy = 0;
-        for (int i = 0; i < entry.size; i++) {
-            long int position = (entry.startPoint.x + addx + vinfo.xoffset) * (vinfo.bits_per_pixel / 8) + (entry.startPoint.y + addy + vinfo.yoffset) * finfo.line_length;
-            color temp = entry.resColor[i];
-            *(fbp + position) = temp.b;
-            *(fbp + position + 1) = temp.g;
-            *(fbp + position + 2) = temp.r;
-            
-            if (entry.direction == 'w') {
-                addy--;
-            } else if (entry.direction == 's') {
-                addy++;
-            } else if (entry.direction == 'a') {
-                addx--;
-            } else if (entry.direction == 'd') {
-                addx++;
-            } 
-        }
-    }
-}
-
 void redraw(point center) {
     // garis lurus keatas
     for (int i = 0; i < 3; i++) {
