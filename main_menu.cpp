@@ -331,9 +331,9 @@ void readFont(string pStr, int length, int first_y, int first_x) {
 						*(fbp + location + 2) = 255;    // putih
 						*(fbp + location + 3) = 0;      // No transparency
 					} else if (pixelmap[y-current_y][x-current_x] == '0') {
-						*(fbp + location) = 0;        // hitam
-						*(fbp + location + 1) = 0;     // hitam
-						*(fbp + location + 2) = 0;    // hitam
+						*(fbp + location) = 50;        // hitam
+						*(fbp + location + 1) = 50;     // hitam
+						*(fbp + location + 2) = 50;    // hitam
 						*(fbp + location + 3) = 0;      // No transparency
 					}
 				}
@@ -349,16 +349,29 @@ void readFont(string pStr, int length, int first_y, int first_x) {
 
 }
 
+void clear_screen(int xx, int yy, int width, int height, color *desired) {
+    for(int x=xx; x<width; x++) {
+        for(int y=yy; y<height; y++) {
+            long int position = (x + vinfo.xoffset) * (vinfo.bits_per_pixel / 8) +
+               (y + vinfo.yoffset) * finfo.line_length;
+            *(fbp + position) = desired->b;
+            *(fbp + position + 1) = desired->g;
+            *(fbp + position + 2) = desired->r;
+            *(fbp + position + 3) = desired->a;
+        }
+    }
+}
+
 void showMenu() {
 
-	string menus[6] = {"MENU", "Tugas1", "Tugas2", "Tugas3", "Tugas4", "Tugas5"};
+	string menus[7] = {"MENU", "Tugas1", "Tugas2", "Tugas3", "Tugas4", "Tugas5", "Tugas6"};
 
-	int first_x = 100;
-	int first_y = 100;
-	readFont(menus[0], menus[0].length(), first_y + 20, first_x + 20);
+	int first_x = 200;
+	int first_y = 30;
+	readFont(menus[0], menus[0].length(), first_y + 20, 50);
 	
 	point p1, p2;
-	for (int i = 1; i < 6; i++) {
+	for (int i = 1; i < 7; i++) {
 		p1.x = first_x; p1.y = first_y;
 		p2.x = first_x + 160; p2.y = p1.y;
 		draw_line(p1, p2, &white);
@@ -369,7 +382,7 @@ void showMenu() {
 		p1.x = p2.x; p1.y = p2.y - 60;
 		draw_line(p2, p1, &white);
 		readFont(menus[i], menus[i].length(), first_y + 20, first_x + 20);
-		first_y += 100;
+		first_y += 80;
 	}
 }
 
@@ -416,6 +429,7 @@ int main () {
 	}
 	printf("The framebuffer device was mapped to memory successfully.\n");
 
+	clear_screen(0,0,800,600,&notSoBlack);
 	showMenu();
     return 0;
 }
